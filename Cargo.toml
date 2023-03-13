@@ -1,0 +1,43 @@
+[package]
+name = "podpod"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { version = "0.10.*", features = [
+    "dynamic_linking",
+    "bevy_asset",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "png",
+    "hdr",
+    "wayland"
+], default-features = false }
+bevy_editor_pls = "0.4.*"
+bytemuck = "1.13.*"
+bytemuck_derive = "1.4.*"
+bevy_egui = "0.20.*"
+noise = "0.8.*"
+rand = "0.8.*"
+
+[build-dependencies]
+glsl-to-spirv = "0.1.*"
+
+[profile.release]
+strip = true
+
+[profile.dev]
+opt-level = 1
+overflow-checks = false
+incremental = true
+
+[profile.dev.package."*"]
+opt-level = 3
+overflow-checks = false
+incremental = true
