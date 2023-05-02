@@ -23,14 +23,13 @@ impl Plugin for RaytracePlugin {
     app.add_plugin(ExtractResourcePlugin::<PBRCameraEntity>::default());
     app.add_plugin(ExtractResourcePlugin::<LightDir>::default());
     let render_app = app.sub_app_mut(RenderApp);
-    let query = QueryState::new(&mut render_app.world);
     render_app
       .init_resource::<RaytracingPipeline>()
       .add_system(extract_spheres.in_schedule(ExtractSchedule))
       .add_system(queue_bind_group.in_set(RenderSet::Queue));
 
     let mut render_graph = render_app.world.resource_mut::<RenderGraph>();
-    render_graph.add_node("raytrace", RayTraceNode { query });
+    render_graph.add_node("raytrace", RayTraceNode { view: None });
     render_graph.add_node_edge(
       "raytrace",
       bevy::render::main_graph::node::CAMERA_DRIVER,

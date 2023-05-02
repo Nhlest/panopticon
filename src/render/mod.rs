@@ -3,6 +3,7 @@ use bevy::prelude::shape::UVSphere;
 use bevy::render::extract_resource::{ExtractResource};
 use bevy::render::camera::CameraOutputMode;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages};
+use bevy_egui::EguiContexts;
 use bytemuck_derive::{Pod, Zeroable};
 use crate::render::raytracer::SIZE;
 use crate::render::raytracer::types::{PBRCameraEntity, RaytracingImage, RTCameraEntity, SphereTag};
@@ -38,6 +39,7 @@ pub fn setup(
   mut images: ResMut<Assets<Image>>,
   mut meshes: ResMut<Assets<Mesh>>,
   mut materials: ResMut<Assets<StandardMaterial>>,
+  mut egui_contexts: EguiContexts
 ) {
   let mut image = Image::new_fill(
     Extent3d {
@@ -64,7 +66,7 @@ pub fn setup(
   let cam_2d = commands.spawn(Camera2dBundle {
     camera: Camera {
       order: 0,
-      output_mode: CameraOutputMode::Skip,
+      output_mode: CameraOutputMode::default(),
       ..default()
     },
     transform: Transform::from_xyz(0.0, 0.0, 2.0),
@@ -82,6 +84,8 @@ pub fn setup(
 
   commands.insert_resource(RTCameraEntity(cam_2d));
   commands.insert_resource(PBRCameraEntity(cam_3d));
+
+  egui_contexts.add_image(image.clone());
 
   commands.insert_resource(RaytracingImage(image));
 
