@@ -1,20 +1,24 @@
+use crate::render::raytracer::pipeline::RaytracingPipeline;
+use crate::render::raytracer::types::{PBRCameraEntity, RaytracingBindGroups};
+use crate::render::raytracer::SIZE;
 use bevy::prelude::*;
-use bevy::render::{render_graph};
+use bevy::render::render_graph;
 use bevy::render::render_resource::{BindGroupDescriptor, BindGroupEntry, ComputePassDescriptor, PipelineCache};
 use bevy::render::renderer::RenderContext;
-use bevy::render::view::{ExtractedView, ViewTarget, ViewUniformOffset, ViewUniforms};
-use crate::render::raytracer::pipeline::RaytracingPipeline;
-use crate::render::raytracer::SIZE;
-use crate::render::raytracer::types::{PBRCameraEntity, RaytracingBindGroups};
+use bevy::render::view::{ExtractedView, ViewUniformOffset, ViewUniforms};
 
 pub struct RayTraceNode {
-  pub view: Option<u32>
+  pub view: Option<u32>,
 }
 
 impl render_graph::Node for RayTraceNode {
   fn update(&mut self, world: &mut World) {
     let entity = world.resource::<PBRCameraEntity>().0;
-    let view = world.query_filtered::<&ViewUniformOffset, With<ExtractedView>>().get(world, entity).ok().map(|x|x.offset);
+    let view = world
+      .query_filtered::<&ViewUniformOffset, With<ExtractedView>>()
+      .get(world, entity)
+      .ok()
+      .map(|x| x.offset);
     self.view = view.or(self.view);
   }
 
@@ -31,20 +35,15 @@ impl render_graph::Node for RayTraceNode {
     let view_uniforms_resource = world.resource::<ViewUniforms>();
     let view_uniforms = &view_uniforms_resource.uniforms;
 
-    let entries = vec![
-      BindGroupEntry {
-        binding: 0,
-        resource: view_uniforms.binding().unwrap(),
-      },
-    ];
-    let bind_group =
-      render_context
-        .render_device()
-        .create_bind_group(&BindGroupDescriptor {
-          label: None,
-          layout: &pipeline.view_bind_group_layout,
-          entries: &entries,
-        });
+    let entries = vec![BindGroupEntry {
+      binding: 0,
+      resource: view_uniforms.binding().unwrap(),
+    }];
+    let bind_group = render_context.render_device().create_bind_group(&BindGroupDescriptor {
+      label: None,
+      layout: &pipeline.view_bind_group_layout,
+      entries: &entries,
+    });
 
     let mut pass = render_context
       .command_encoder()

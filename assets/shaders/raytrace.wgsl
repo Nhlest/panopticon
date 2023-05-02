@@ -11,6 +11,13 @@ struct Sphere {
   radius: f32,
 };
 
+struct HitInfo {
+  hit_point: vec3<f32>,
+  distance: f32,
+  normal: vec3<f32>,
+  color: vec4<f32>
+}
+
 @group(2) @binding(0)
 var<storage> spheres: array<Sphere>;
 @group(2) @binding(1)
@@ -36,6 +43,8 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
   if ((location.x / 30 % 2 + location.y / 30 % 2) % 2 == 0) {
     color.g = 1.0 - color.g;
   }
+  var hit_info: HitInfo;
+  var hit_flag = false;
   for (var i: i32 = 0; i < num_spheres; i ++) {
     let s_c = spheres[i].coord;
 //    let c = dot(ray_org, ray_org) - spheres[i].radius * spheres[i].radius;
@@ -59,10 +68,19 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
           continue;
         }
       }
-      let x = normalize(ray_org - s_c + ray_dir * t);
-      let n = dot(x, -light_dir);
-      color = vec4(spheres[i].color.rgb * n, 1.0);
+      if (!hit_flag || (t < hit_info.distance)) {
+        hit_flag = true;
+        let x = normalize(ray_org - s_c + ray_dir * t);
+        let n = dot(x, -light_dir);
+        hit_info.hit_point = ray_org + ray_dir * t;
+        hit_info.normal = x;
+        hit_info.distance = t;
+        hit_info.color = vec4(spheres[i].color.rgb * n, 1.0);
+      }
     }
+  }
+  if (hit_flag) {
+    color = hit_info.color;
   }
   textureStore(texture, location, color);
 }

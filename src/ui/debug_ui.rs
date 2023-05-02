@@ -1,8 +1,8 @@
+use crate::render::raytracer::types::{PBRCameraEntity, RTCameraEntity};
 use bevy::prelude::*;
 use bevy::render::camera::CameraOutputMode;
 use bevy_egui::egui::{Layout, Widget};
 use bevy_egui::*;
-use crate::render::raytracer::types::{PBRCameraEntity, RTCameraEntity};
 
 pub fn debug_ui(
   mut egui: EguiContexts,
@@ -24,7 +24,11 @@ pub fn debug_ui(
         let mut visible = *visibility != Visibility::Hidden;
         let t = if visible { "RTX ON" } else { "RTX OFF" };
         ui.checkbox(&mut visible, t);
-        *visibility = if visible { Visibility::Visible } else { Visibility::Hidden };
+        *visibility = if visible {
+          Visibility::Visible
+        } else {
+          Visibility::Hidden
+        };
         if visible {
           camera.get_mut(rt_camera_entity.0).unwrap().output_mode = CameraOutputMode::default();
           camera.get_mut(pbr_camera_entity.0).unwrap().output_mode = CameraOutputMode::Skip;

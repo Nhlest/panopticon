@@ -1,19 +1,19 @@
-use bevy::prelude::*;
-use bevy::render::extract_resource::{ExtractResourcePlugin};
-use bevy::render::{RenderApp, RenderSet};
-use bevy::render::render_graph::RenderGraph;
-use crate::render::LightDir;
 use crate::render::raytracer::node::RayTraceNode;
 use crate::render::raytracer::pipeline::RaytracingPipeline;
 use crate::render::raytracer::systems::{extract_spheres, queue_bind_group};
 use crate::render::raytracer::types::{PBRCameraEntity, RaytracingImage};
+use crate::render::LightDir;
+use bevy::prelude::*;
+use bevy::render::extract_resource::ExtractResourcePlugin;
+use bevy::render::render_graph::RenderGraph;
+use bevy::render::{RenderApp, RenderSet};
 
 pub mod node;
 pub mod pipeline;
-pub mod types;
 pub mod systems;
+pub mod types;
 
-pub const SIZE : [u32; 2] = [1024, 768];
+pub const SIZE: [u32; 2] = [1024, 768];
 
 pub struct RaytracePlugin;
 
@@ -30,9 +30,6 @@ impl Plugin for RaytracePlugin {
 
     let mut render_graph = render_app.world.resource_mut::<RenderGraph>();
     render_graph.add_node("raytrace", RayTraceNode { view: None });
-    render_graph.add_node_edge(
-      "raytrace",
-      bevy::render::main_graph::node::CAMERA_DRIVER,
-    );
+    render_graph.add_node_edge("raytrace", bevy::render::main_graph::node::CAMERA_DRIVER);
   }
 }

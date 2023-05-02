@@ -1,8 +1,12 @@
-use std::borrow::Cow;
 use bevy::prelude::*;
-use bevy::render::render_resource::{BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, BufferBindingType, CachedComputePipelineId, ComputePipelineDescriptor, PipelineCache, ShaderStages, ShaderType, StorageTextureAccess, TextureFormat, TextureViewDimension};
+use bevy::render::render_resource::{
+  BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingType, BufferBindingType,
+  CachedComputePipelineId, ComputePipelineDescriptor, PipelineCache, ShaderStages, ShaderType, StorageTextureAccess,
+  TextureFormat, TextureViewDimension,
+};
 use bevy::render::renderer::RenderDevice;
 use bevy::render::view::ViewUniform;
+use std::borrow::Cow;
 
 #[derive(Resource)]
 pub struct RaytracingPipeline {
@@ -29,7 +33,7 @@ impl FromWorld for RaytracingPipeline {
               min_binding_size: Some(ViewUniform::min_size()),
             },
             count: None,
-          }]
+          }],
         });
     let texture_bind_group_layout =
       world
@@ -57,9 +61,7 @@ impl FromWorld for RaytracingPipeline {
               binding: 0,
               visibility: ShaderStages::COMPUTE,
               ty: BindingType::Buffer {
-                ty: BufferBindingType::Storage {
-                  read_only: true,
-                },
+                ty: BufferBindingType::Storage { read_only: true },
                 has_dynamic_offset: false,
                 min_binding_size: None,
               },
@@ -82,26 +84,27 @@ impl FromWorld for RaytracingPipeline {
         .resource::<RenderDevice>()
         .create_bind_group_layout(&BindGroupLayoutDescriptor {
           label: None,
-          entries: &[
-            BindGroupLayoutEntry {
-              binding: 0,
-              visibility: ShaderStages::COMPUTE,
-              ty: BindingType::Buffer {
-                ty: BufferBindingType::Uniform,
-                has_dynamic_offset: false,
-                min_binding_size: None,
-              },
-              count: None,
+          entries: &[BindGroupLayoutEntry {
+            binding: 0,
+            visibility: ShaderStages::COMPUTE,
+            ty: BindingType::Buffer {
+              ty: BufferBindingType::Uniform,
+              has_dynamic_offset: false,
+              min_binding_size: None,
             },
-          ],
+            count: None,
+          }],
         });
     let pipeline_cache = world.resource::<PipelineCache>();
-    let shader = world
-      .resource::<AssetServer>()
-      .load("shaders/raytrace.wgsl");
+    let shader = world.resource::<AssetServer>().load("shaders/raytrace.wgsl");
     let pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
       label: None,
-      layout: vec![view_bind_group_layout.clone(), texture_bind_group_layout.clone(), spheres_bind_group_layout.clone(), light_dir_bind_group_layout.clone()],
+      layout: vec![
+        view_bind_group_layout.clone(),
+        texture_bind_group_layout.clone(),
+        spheres_bind_group_layout.clone(),
+        light_dir_bind_group_layout.clone(),
+      ],
       push_constant_ranges: vec![],
       shader,
       shader_defs: vec![],
@@ -117,4 +120,3 @@ impl FromWorld for RaytracingPipeline {
     }
   }
 }
-

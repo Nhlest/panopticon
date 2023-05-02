@@ -1,17 +1,17 @@
 use crate::app::AppState;
+use crate::render::raytracer::RaytracePlugin;
+use crate::render::LightDir;
 use crate::ui::main_menu::main_menu;
+use crate::ui::rt_viewport::RTViewportWindow;
+use app::setup;
 use bevy::prelude::*;
 use bevy::window::{ExitCondition, WindowResolution};
 use bevy_editor_pls::{AddEditorWindow, EditorPlugin};
-use crate::render::{LightDir, setup};
-use crate::render::raytracer::RaytracePlugin;
-use crate::ui::debug_ui::debug_ui;
-use crate::ui::rt_viewport::RTViewportWindow;
 
 pub mod app;
+pub mod render;
 pub mod ui;
 pub mod util;
-pub mod render;
 
 fn main() {
   App::new()
@@ -38,17 +38,7 @@ fn main() {
     .add_plugin(RaytracePlugin)
     .add_system(main_menu.in_set(OnUpdate(AppState::MainMenu)))
     // .add_system(debug_ui.in_set(OnUpdate(AppState::Render)))
-    .add_system(rotate_light.in_set(OnUpdate(AppState::Render)))
+    .add_system(app::rotate_light.in_set(OnUpdate(AppState::Render)))
     .insert_resource(ClearColor(Color::BLACK))
     .run();
-}
-
-fn rotate_light(
-  time: Res<Time>,
-  mut light_dir: ResMut<LightDir>
-) {
-  let t = time.elapsed().as_secs_f32();
-  light_dir.dir[0] = t.sin();
-  light_dir.dir[2] = 0.2;
-  light_dir.dir[1] = t.cos();
 }
