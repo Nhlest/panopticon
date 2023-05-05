@@ -1,6 +1,9 @@
 use crate::render::raytracer::types::RaytracingImage;
 use bevy::prelude::*;
+use bevy_editor_pls::editor::EditorInternalState;
 use bevy_editor_pls::editor_window::{EditorWindow, EditorWindowContext};
+use bevy_editor_pls::egui::Ui;
+use bevy_editor_pls::egui_dock::NodeIndex;
 use bevy_egui::{egui, EguiUserTextures};
 
 pub struct RTViewportWindow;

@@ -1,4 +1,4 @@
-use crate::app::AppState;
+use crate::app::{AppState, reset_iter, rotate_light};
 use crate::render::raytracer::RaytracePlugin;
 use crate::render::LightDir;
 use crate::ui::main_menu::main_menu;
@@ -7,6 +7,7 @@ use app::setup;
 use bevy::prelude::*;
 use bevy::window::{ExitCondition, WindowResolution};
 use bevy_editor_pls::{AddEditorWindow, EditorPlugin};
+use crate::app::input::camera;
 
 pub mod app;
 pub mod render;
@@ -38,7 +39,9 @@ fn main() {
     .add_plugin(RaytracePlugin)
     .add_system(main_menu.in_set(OnUpdate(AppState::MainMenu)))
     // .add_system(debug_ui.in_set(OnUpdate(AppState::Render)))
-    .add_system(app::rotate_light.in_set(OnUpdate(AppState::Render)))
+    .add_system(rotate_light.in_set(OnUpdate(AppState::Render)))
+    .add_system(camera.in_set(OnUpdate(AppState::Render)))
+    .add_system(reset_iter.in_set(OnUpdate(AppState::Render)))
     .insert_resource(ClearColor(Color::BLACK))
     .run();
 }

@@ -1,4 +1,4 @@
-use crate::render::raytracer::types::{PBRCameraEntity, RTCameraEntity, RaytracingImage, SphereTag};
+use crate::render::raytracer::types::{PBRCameraEntity, RTCameraEntity, RaytracingImage, SphereTag, TextureIter};
 use crate::render::raytracer::SIZE;
 use crate::render::LightDir;
 use bevy::prelude::shape::UVSphere;
@@ -6,6 +6,8 @@ use bevy::prelude::*;
 use bevy::render::camera::CameraOutputMode;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages};
 use bevy_egui::EguiContexts;
+
+pub mod input;
 
 #[derive(States, PartialEq, Eq, Debug, Clone, Hash, Default)]
 pub enum AppState {
@@ -61,7 +63,7 @@ pub fn setup(
         output_mode: CameraOutputMode::Skip,
         ..default()
       },
-      transform: Transform::from_xyz(0.0, 0.0, 2.0),
+      transform: Transform::from_xyz(0.0, 0.0, 6.0),
       ..default()
     })
     .id();
@@ -81,14 +83,24 @@ pub fn setup(
   let m_id = meshes.add(mesh.into());
 
   let material = StandardMaterial {
-    base_color: Color::BEIGE,
+    base_color: Color::Rgba {
+      red: 0.0,
+      green: 0.0,
+      blue: 0.5,
+      alpha: 1.0,
+    },
     metallic: 0.3,
     perceptual_roughness: 0.3,
     ..default()
   };
 
   let material_2 = StandardMaterial {
-    base_color: Color::RED,
+    base_color: Color::Rgba {
+      red: 0.5,
+      green: 1.0,
+      blue: 1.0,
+      alpha: 1.0,
+    },
     metallic: 0.3,
     perceptual_roughness: 0.3,
     ..default()
@@ -110,7 +122,7 @@ pub fn setup(
     PbrBundle {
       mesh: m_id,
       material: mat_id_2,
-      transform: Transform::from_xyz(1.0, -1.0, 0.2),
+      transform: Transform::from_xyz(0.0, -100.0, 0.0).with_scale(Vec3::splat(99.0)),
       ..default()
     },
   ));
@@ -129,7 +141,18 @@ pub fn setup(
 
 pub fn rotate_light(time: Res<Time>, mut light_dir: ResMut<LightDir>) {
   let t = time.elapsed().as_secs_f32();
-  light_dir.dir[0] = t.sin();
-  light_dir.dir[2] = 0.2;
-  light_dir.dir[1] = t.cos();
+  light_dir.dir[0] = 0.2;
+  light_dir.dir[1] = -1.0;
+  light_dir.dir[2] = -0.2;
+}
+
+pub fn reset_iter(
+  q: Query<Entity, Changed<Transform>>,
+  m: EventReader<AssetEvent<StandardMaterial>>,
+  mut iter: ResMut<TextureIter>
+) {
+  iter.0 += 1;
+  if !q.is_empty() || !m.is_empty() {
+    iter.0 = 0;
+  }
 }

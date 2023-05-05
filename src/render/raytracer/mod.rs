@@ -1,7 +1,7 @@
 use crate::render::raytracer::node::RayTraceNode;
 use crate::render::raytracer::pipeline::RaytracingPipeline;
 use crate::render::raytracer::systems::{extract_spheres, queue_bind_group};
-use crate::render::raytracer::types::{PBRCameraEntity, RaytracingImage};
+use crate::render::raytracer::types::{PBRCameraEntity, RaytracingImage, TextureIter};
 use crate::render::LightDir;
 use bevy::prelude::*;
 use bevy::render::extract_resource::ExtractResourcePlugin;
@@ -19,6 +19,8 @@ pub struct RaytracePlugin;
 
 impl Plugin for RaytracePlugin {
   fn build(&self, app: &mut App) {
+    app.insert_resource(TextureIter(0));
+    app.add_plugin(ExtractResourcePlugin::<TextureIter>::default());
     app.add_plugin(ExtractResourcePlugin::<RaytracingImage>::default());
     app.add_plugin(ExtractResourcePlugin::<PBRCameraEntity>::default());
     app.add_plugin(ExtractResourcePlugin::<LightDir>::default());

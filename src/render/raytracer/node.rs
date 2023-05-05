@@ -1,5 +1,5 @@
 use crate::render::raytracer::pipeline::RaytracingPipeline;
-use crate::render::raytracer::types::{PBRCameraEntity, RaytracingBindGroups};
+use crate::render::raytracer::types::{PBRCameraEntity, RaytracingBindGroups, TextureIter};
 use crate::render::raytracer::SIZE;
 use bevy::prelude::*;
 use bevy::render::render_graph;
@@ -53,6 +53,7 @@ impl render_graph::Node for RayTraceNode {
     pass.set_bind_group(1, &bind_groups.image, &[]);
     pass.set_bind_group(2, &bind_groups.spheres, &[]);
     pass.set_bind_group(3, &bind_groups.light_dir, &[]);
+    pass.set_bind_group(4, &bind_groups.seed, &[]);
 
     if let Some(pipeline) = pipeline_cache.get_compute_pipeline(pipeline.pipeline) {
       pass.set_pipeline(pipeline);
