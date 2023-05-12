@@ -1,6 +1,6 @@
 use crate::render::raytracer::node::RayTraceNode;
 use crate::render::raytracer::pipeline::RaytracingPipeline;
-use crate::render::raytracer::systems::{extract_spheres, queue_bind_group};
+use crate::render::raytracer::systems::{extract_meshes, extract_spheres, prepare_meshes, queue_bind_group, queue_meshes};
 use crate::render::raytracer::types::{PBRCameraEntity, RaytracingImage, TextureIter};
 use crate::render::LightDir;
 use bevy::prelude::*;
@@ -28,6 +28,9 @@ impl Plugin for RaytracePlugin {
     render_app
       .init_resource::<RaytracingPipeline>()
       .add_system(extract_spheres.in_schedule(ExtractSchedule))
+      .add_system(extract_meshes.in_schedule(ExtractSchedule))
+      .add_system(prepare_meshes.in_set(RenderSet::Prepare))
+      .add_system(queue_meshes.in_set(RenderSet::Queue))
       .add_system(queue_bind_group.in_set(RenderSet::Queue));
 
     let mut render_graph = render_app.world.resource_mut::<RenderGraph>();

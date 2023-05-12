@@ -138,6 +138,26 @@ pub fn queue_bind_group(
   });
 }
 
+pub fn extract_meshes(
+  mut commands: Commands,
+  meshes: Extract<Res<Assets<Mesh>>>,
+  spheres: Extract<Query<(&Transform, &Handle<StandardMaterial>), With<SphereTag>>>,
+) {
+
+}
+
+pub fn prepare_meshes(
+  mut commands: Commands,
+) {
+
+}
+
+pub fn queue_meshes(
+  mut commands: Commands,
+) {
+
+}
+
 pub fn extract_spheres(
   mut commands: Commands,
   materials: Extract<Res<Assets<StandardMaterial>>>,
