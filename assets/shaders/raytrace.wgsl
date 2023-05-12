@@ -15,7 +15,8 @@ struct Sphere {
 
 struct Material {
   color: vec4<f32>,
-  roughness: f32
+  emissive: vec3<f32>,
+  roughness: f32,
 }
 
 struct HitInfo {
@@ -121,19 +122,27 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     }
     ray_count = ray_count + 1;
     if (hit(&hit_info, ray)) {
-      color = vec4(color.rgb * materials[hit_info.material].color.rgb, 1.0);
-      ray.org = hit_info.hit_point + hit_info.normal * 0.0001;
-      ray.dir = reflect(ray.dir, hit_info.normal + (materials[hit_info.material].roughness - 0.089) * vec3(random(&seed) - 0.5, random(&seed) - 0.5, random(&seed) - 0.5));
+      if (length(materials[hit_info.material].emissive) > 0.0) {
+        color = vec4(color.rgb * materials[hit_info.material].emissive, 1.0);
+        break;
+      } else {
+        color = vec4(color.rgb * materials[hit_info.material].color.rgb, 1.0);
+        ray.org = hit_info.hit_point + hit_info.normal * 0.0001;
+        ray.dir = reflect(ray.dir, hit_info.normal + (materials[hit_info.material].roughness - 0.089) * vec3(random(&seed) - 0.5, random(&seed) - 0.5, random(&seed) - 0.5));
+      }
     } else {
       if (ray_count == 1) {
         color = miss(ray);
       } else {
-        color = vec4((color.rgb * light(ray)), 1.0);
+//        color = vec4((color.rgb * light(ray)), 1.0);
+        color = color * 0.01;
       }
       break;
     }
   }
-  let old_color = vec4(textureLoad(texture, location).rgb * f32(iter), 1.0);
-  let new_color = vec4((old_color + color).rgb / f32(iter + u32(1)), 1.0);
+  let weight = 1.0 / (f32(iter) + 1.0);
+  let new_color = vec4(textureLoad(texture, location).rgb * (1.0 - weight) + color.rgb * weight, 1.0);
+//  let old_color = vec4(textureLoad(texture, location).rgb * f32(iter), 1.0);
+//  let new_color = vec4((old_color + color).rgb / f32(iter + u32(1)), 1.0);
   textureStore(texture, location, new_color);
 }

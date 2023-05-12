@@ -89,6 +89,7 @@ pub fn setup(
       blue: 0.5,
       alpha: 1.0,
     },
+    emissive: Color::BLACK,
     metallic: 0.3,
     perceptual_roughness: 0.3,
     ..default()
@@ -103,11 +104,19 @@ pub fn setup(
     },
     metallic: 0.3,
     perceptual_roughness: 0.3,
+    emissive: Color::BLACK,
+    ..default()
+  };
+
+  let material_3 = StandardMaterial {
+    base_color: Color::BLACK,
+    emissive: Color::WHITE,
     ..default()
   };
 
   let mat_id = materials.add(material);
   let mat_id_2 = materials.add(material_2);
+  let mat_id_3 = materials.add(material_3);
 
   commands.spawn((
     SphereTag,
@@ -120,9 +129,18 @@ pub fn setup(
   commands.spawn((
     SphereTag,
     PbrBundle {
-      mesh: m_id,
+      mesh: m_id.clone(),
       material: mat_id_2,
       transform: Transform::from_xyz(0.0, -100.0, 0.0).with_scale(Vec3::splat(99.0)),
+      ..default()
+    },
+  ));
+  commands.spawn((
+    SphereTag,
+    PbrBundle {
+      mesh: m_id,
+      material: mat_id_3,
+      transform: Transform::from_xyz(2.0, 2.0, -1.0).with_scale(Vec3::splat(2.0)),
       ..default()
     },
   ));

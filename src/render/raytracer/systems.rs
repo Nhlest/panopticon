@@ -151,6 +151,6 @@ pub fn extract_spheres(
     ));
   }
   for (h, m) in materials.iter() {
-    commands.spawn((materials.get_handle(h), MaterialE::new(m.base_color.as_rgba_f32(), m.perceptual_roughness)));
+    commands.spawn((materials.get_handle(h), MaterialE::new(m.base_color.as_rgba_f32(), m.perceptual_roughness, [m.emissive.r(), m.emissive.g(), m.emissive.b()])));
   }
 }

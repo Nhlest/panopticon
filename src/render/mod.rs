@@ -17,10 +17,8 @@ struct Sphere {
 #[repr(C)]
 pub struct MaterialE {
   pub color: [f32; 4],
+  pub emissive: [f32; 3],
   pub roughness: f32,
-  pub a: f32,
-  pub b: f32,
-  pub c: f32,
 }
 
 #[derive(Copy, Clone, Pod, Zeroable, Resource, ExtractResource, Default)]
@@ -36,7 +34,7 @@ impl Sphere {
 }
 
 impl MaterialE {
-  pub fn new(color: [f32; 4], roughness: f32) -> Self {
-    Self { color, roughness, a: 0.0, b: 0.0, c: 0.0 }
+  pub fn new(color: [f32; 4], roughness: f32, emissive: [f32; 3]) -> Self {
+    Self { color, roughness, emissive }
   }
 }
