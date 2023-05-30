@@ -10,7 +10,7 @@ struct Sphere {
   coord: [f32; 3],
   radius: f32,
   material: u32,
-  pad: [f32;3],
+  pad: [f32; 3],
 }
 
 #[derive(Copy, Clone, Pod, Zeroable, Component)]
@@ -27,14 +27,12 @@ pub struct LightDir {
   pub dir: [f32; 3],
 }
 
-impl Sphere {
-  pub fn new(coord: [f32; 3], radius: f32, material: u32) -> Self {
-    Self { coord, radius, material, pad: [0.0; 3] }
-  }
-}
-
 impl MaterialE {
   pub fn new(color: [f32; 4], roughness: f32, emissive: [f32; 3]) -> Self {
-    Self { color, roughness, emissive }
+    Self {
+      color,
+      roughness,
+      emissive,
+    }
   }
 }

@@ -28,6 +28,9 @@ impl render_graph::Node for RayTraceNode {
     render_context: &mut RenderContext,
     world: &World,
   ) -> Result<(), render_graph::NodeRunError> {
+    if world.resource::<TextureIter>().0 > 100 {
+      return Ok(());
+    }
     let bind_groups = &world.resource::<RaytracingBindGroups>();
     let pipeline_cache = world.resource::<PipelineCache>();
     let pipeline = world.resource::<RaytracingPipeline>();
@@ -51,13 +54,14 @@ impl render_graph::Node for RayTraceNode {
 
     pass.set_bind_group(0, &bind_group, &[self.view.unwrap()]);
     pass.set_bind_group(1, &bind_groups.image, &[]);
-    pass.set_bind_group(2, &bind_groups.spheres, &[]);
-    pass.set_bind_group(3, &bind_groups.light_dir, &[]);
-    pass.set_bind_group(4, &bind_groups.seed, &[]);
+    pass.set_bind_group(2, &bind_groups.meshes, &[]);
+    pass.set_bind_group(3, &bind_groups.materials, &[]);
+    pass.set_bind_group(4, &bind_groups.light_dir, &[]);
+    pass.set_bind_group(5, &bind_groups.seed, &[]);
 
     if let Some(pipeline) = pipeline_cache.get_compute_pipeline(pipeline.pipeline) {
       pass.set_pipeline(pipeline);
-      pass.dispatch_workgroups(SIZE[0] / 16, SIZE[1] / 16, 1);
+      pass.dispatch_workgroups(SIZE[0] / 32, SIZE[1] / 32, 1);
     }
     Ok(())
   }
